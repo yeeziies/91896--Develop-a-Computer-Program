@@ -1,171 +1,105 @@
-# complete version  
-#imports tkinter to create GUI
-
-from tkinter import*
-from tkinter import ttk
-from tkinter import messagebox
 import random
-import os
+from tkinter import *
+
+num = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+app = Tk()
+app.title("Math Quiz")
+
+app.geometry("550x500")  # Set Window Size
+app.resizable(False, False)  # Do not allow window resize
+
+# Load image safely
+button_img = None
+try:
+    button_img = PhotoImage(file="C:/Users/21300/Downloads/KUREMI.png")
+except Exception as e:
+    print(f"Error loading image: {e}")
+
+if button_img:
+    cool_button = Button(app, image=button_img)
+    cool_button.place(relx=0.5, rely=0.05, anchor='n')
+    cool_label = Label(app, image=button_img)
+    cool_label.place(relx=0.5, rely=0.25, anchor='n')
+else:
+    print("No Image")
+
+# Variables to store current numbers and widgets for messages
+current_num1 = None
+current_num2 = None
+question_label = None
+message_label = None
+
+def generate_question():
+    global current_num1, current_num2, question_label, message_label
+    current_num1 = random.choice(num)
+    current_num2 = random.choice(num)
+    question_text = f"{current_num1} + {current_num2} = ?"
+
+    # Remove old question label if exists
+    if question_label:
+        question_label.destroy()
+    question_label = Label(app, text=question_text, font=("Courier", 16))
+    question_label.place(relx=0.16, rely=0.14, relwidth=0.7, relheight=0.23)
+
+    # Clear previous message
+    if message_label:
+        message_label.destroy()
+
+def check_answer(user_entry):
+    global message_label
+    user_input = user_entry.get()
+
+    # Remove old message label
+    if message_label:
+        message_label.destroy()
+
+    # Validation
+    if user_input == "":
+        message_label = Label(app, text="NO BLANKS!", fg="RED", font=("Comic Sans MS", 16))
+        message_label.place(relx=0.3, rely=0.1)
+        return
+    if not user_input.isdigit():
+        if user_input.isalnum():
+            message_label = Label(app, text="NO LETTERS!", fg="RED", font=("Comic Sans MS", 16))
+            message_label.place(relx=0.3, rely=0.1)
+        elif " " in user_input:
+            message_label = Label(app, text="No Spaces Allowed!", fg="RED", font=("Comic Sans MS", 16))
+            message_label.place(relx=0.3, rely=0.1)
+        else:
+            message_label = Label(app, text="No Symbols Allowed!", fg="RED", font=("Comic Sans MS", 16))
+            message_label.place(relx=0.3, rely=0.1)
+        return
+    if len(user_input) > 6:
+        message_label = Label(app, text="Character Limit is 6", fg="RED", font=("Comic Sans MS", 16))
+        message_label.place(relx=0.3, rely=0.1)
+        return
+
+    # Check answer
+    if int(user_input) == (current_num1 + current_num2):
+        message_label = Label(app, text="Correct!", fg="green", font=("Courier", 16))
+        message_label.place(relx=0.3, rely=0.2)
+    else:
+        message_label = Label(app, text="Wrong!!!", fg="red", font=("Courier", 16))
+        message_label.place(relx=0.3, rely=0.2)
+
+def on_start():
+    generate_question()
+
+# Start button
+start_button = Button(app, text="Start", command=on_start)
+start_button.place(relx=0.45, rely=0.2)
+
+# Entry text box
+user_entry = Entry(app)
+user_entry.place(relx=0.35, rely=0.4, relwidth=0.34, relheight=0.23)
+
+# Submit button
+submit_button = Button(app, text="Submit", command=lambda: check_answer(user_entry))
+submit_button.place(relx=0.35, rely=0.64, relwidth=0.34, relheight=0.23)
+
+# Try Again button - just generates a new question
+try_again_button = Button(app, text="Try Again", command=generate_question)
+try_again_button.place(relx=0.39, rely=0.9)
 
-#Quit function
-def quit():
-    main_window.destroy()
-
-def photo():
-    
-
-    gif= PhotoImage(file="C:/Users/21300/OneDrive - Lynfield College/Documents/2PAD 2024/fdshfbhjdsvfdsjf.png")
-
-    gif_label= Tk.Label(main_window,image=gif)
-    gif_label.grid(column=0, row=5)
-
-    gif_label.image= gif
-
-
-def info_entries():
-
-    name_count = 0
-
-    Label(main_window, font=("Helvetica 10 bold"), text="Row").grid(column=0,row=7)
-    Label(main_window, font=("Helvetica 10 bold"),fg ="#ffe2ef", text="Full Name").grid(column=1,row=7)  
-    Label(main_window, font=("Helvetica 10 bold"),text="Party Items").grid(column=2,row=7)
-    Label(main_window, font=("Helvetica 10 bold"),text="Items Hired").grid(column=3,row=7)
-    Label(main_window, font=("Helvetica 10 bold"),text="Reciept No").grid(column=4,row=7)
-
-    while name_count < counters['total_entries'] :
-        Label(main_window, text=name_count).grid(column=0,row=name_count+8)
-        Label(main_window, text=(entries[name_count][0])).grid(column=1,row=name_count+8)
-        Label(main_window, text=(entries[name_count][1])).grid(column=2,row=name_count+8)
-        Label(main_window, text=(entries[name_count][2])).grid(column=3,row=name_count+8)
-        Label(main_window, text=(entries[name_count][3])).grid(column=4,row=name_count+8)
-        name_count +=  1
-        counters['name_count'] = name_count
-
-def check_inputs ():
-    input_check = 0
-    Label(main_window, text="               ") .grid(column=2,row=0)
-    Label(main_window, text="               ") .grid(column=2,row=1)
-    Label(main_window, text="               ") .grid(column=2,row=2)
-    Label(main_window, text="               ") .grid(column=2,row=3)
-
-    if (full_name.get())== "":
-        Label(main_window, fg="#eb1979", text= "REQUIRED").grid(column=2,row=0)
-        input_check = 1
-
-    if len(combo_party_items.get())== 0:
-        Label(main_window, fg="#eb1979", text= "REQUIRED").grid(column=2,row=1)
-        input_check = 1
-
-    if len(items_hired.get())== 0:
-        Label(main_window, fg="#eb1979", text= "REQUIRED").grid(column=2,row=2)
-        input_check = 1
-
-    if input_check == 0 :
-        append_name()
-
-
-def append_name():
-
-    receipt_number= random.randint(1,10000) #creates random number gen with the limit of 1-10000
-   
-    entries.append([full_name.get(), combo_party_items.get(), items_hired.get(), receipt_number])
-
-   
-    full_name.delete(0, 'end')
-
-    combo_party_items.set('')  # Clears combo box
-
-    items_hired.delete(0, 'end')
-
-    counters['total_entries'] += 1
-   
-
-def delete_row():
-    # find which row is to be deleted and delete it
-
-    del entries[int(delete_item.get())]
-
-    counters['total_entries'] -= 1
-
-    name_count = counters['name_count']
-
-    delete_item.delete(0, 'end')
-
-    # clear the last item displayed on the GUI
-
-    Label(main_window, text="       ").grid(column=0, row=name_count + 7)
-
-    Label(main_window, text="       ").grid(column=1, row=name_count + 7)
-
-    Label(main_window, text="       ").grid(column=2, row=name_count + 7)
-
-    Label(main_window, text="       ").grid(column=3, row=name_count + 7)
-
-    Label(main_window, text="       ").grid(column=4, row=name_count + 7)
-
-    Label(main_window, text="       ").grid(column=5, row=name_count + 7)
-
-    info_entries()
-
-
-
-
-   
-def setup_buttons():
-    Label(main_window, bg ='#ffebf9',font=("Helvetica 10 bold"), text= "Full Name"). grid (column= 0, row=0, sticky=E)
-    Label(main_window, bg ='#ffebf9', font=("Helvetica 10 bold"), text="Party Items") .grid(column=0,row=1,sticky=E)
-    Label(main_window, bg ='#ffebf9', font=("Helvetica 10 bold"), text="Items Hired") .grid(column=0,row=2,sticky=E)
-    Label(main_window, bg ='#ffebf9', font=("Helvetica 10 bold"),text="Reciept No").grid(column=0, row=3, sticky=E)
-
-    Button(main_window, text="Quit",command=quit,width = 10) .grid(column=4, row=0,sticky=E)
-    Button(main_window, text="Submit", bg="#f1cde7",command=check_inputs) .grid(column=3,row=1)
-    Button(main_window, text="Print Details",command= info_entries,width = 10) .grid(column=4,row=1,sticky=E)
-   
-    Label(main_window, text="Row #") .grid(column=3,row=2,sticky=E)
-    Button(main_window, text="Delete Row",command=delete_row,width = 10) .grid(column=4,row=3,sticky=E)
-   
-
-
-def main():
-
-
-    setup_buttons()
-    photo()
-    main_window.mainloop()
-
-counters = {'total_entries':0,'name_count':0}
-entries=[]
-photo()
-main_window =Tk()
-main_window.geometry("550x500")
-main_window.title("Julie's Party Store")
-
-
-
-
-main_window.configure(background="#ffebf9")
-
-full_name = Entry(main_window)
-
-full_name.grid(column=1, row=0)
-
-
-combo_party_items = ttk.Combobox(main_window, values=["Balloons","Candy", "Confetti", "Clowns", "Cups", "Cutlery","Fairy Lights","Glassware", "Party Hats","Table Decorations",])
-combo_party_items.grid(column=1, row=1)
-
-
-items_hired = Entry(main_window)
-
-items_hired.grid(column=1, row=2)
-
-
-delete_item = Entry(main_window)
-
-delete_item.grid(column=3, row=3)
-
-
-
- 
-
-
-main()
+app.mainloop()
